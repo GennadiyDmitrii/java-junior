@@ -1,51 +1,30 @@
 package com.acme.edu.message;
 
-import com.acme.edu.Flusher;
-import com.acme.edu.formatters.PrefixFormatter;
+import com.acme.edu.accum.Accumulator;
+import com.acme.edu.accum.StringAccum;
 
-public class StringMessage implements Message {
-    private String message;
-    private static final String stringUsage= "StringMessage";
-    private static String stringBuffer;
-    private static int stringCounter;
+public class StringMessage extends Message {
 
-    public StringMessage (String message) {
-        this.message = message;
-    }
-    @Override
-    public String isUsed() {
-        return stringUsage;
+    private static final String PREFICS = "string: ";
+
+
+
+    public StringMessage(Object message) {
+        super(message);
     }
 
     @Override
-    public void accumulate() {
-        if (stringBuffer == null ){
-            Flusher.setUsed(stringUsage);
-        } else {
-            if (stringBuffer.equals(message)) {
-                stringCounter++;
-                Flusher.setUsed(stringUsage);
-            } else {
-                Flusher.flush();
-                flush();
-            }
-        }
-        stringBuffer = message;
-        if (stringCounter ==0){
-            Flusher.setValue(stringBuffer);
-        }else {
-            Flusher.setValue(stringBuffer + " (x" + String.valueOf(stringCounter+1) + ")");
-        }
-        Flusher.setPrefix(acceptPrefix(new PrefixFormatter()));
-    }
-    @Override
-    public void flush(){
-        stringBuffer = null;
-        stringCounter = 0;
+    public String getPrefics() {
+        return PREFICS;
     }
 
     @Override
-    public String acceptPrefix(PrefixFormatter prefixFormatter) {
-        return prefixFormatter.visitStringMessage(this);
+    public boolean isAppendable() {
+        return true;
+    }
+
+    @Override
+    public Accumulator createAccumulator() {
+        return new StringAccum();
     }
 }
